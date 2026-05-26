@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Precios — Fudo CS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<style>
+:root {
+  --orange:       #F4510A;
+  --orange-dark:  #C93E06;
+  --orange-lite:  #FEF0EA;
+  --orange-mid:   #F87645;
+  --navy:         #1A1464;
+  --navy-mid:     #2E28A0;
+  --ink:          #111111;
+  --ink2:         #444444;
+  --ink3:         #888888;
+  --bg:           #F7F7F7;
+  --white:        #FFFFFF;
+  --border:       rgba(0,0,0,0.08);
+  --border2:      rgba(0,0,0,0.14);
+  --red-lite:     #FDECEC;
+  --red:          #C0392B;
+  --green-lite:   #E8F8F0;
+  --green:        #0A8A4A;
+  --r:  12px;
+  --r2: 8px;
+  --sh: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+  --sh2: 0 2px 8px rgba(244,81,10,0.18), 0 8px 24px rgba(244,81,10,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+input,button{font-family:'Inter',sans-serif}
+
+/* ─── HEADER ─── */
+.header{background:var(--white);border-bottom:2px solid var(--orange);padding:0 2rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(244,81,10,0.08)}
+.hb{display:flex;align-items:center;gap:14px}
+.hlogo{font-size:22px;font-weight:900;color:var(--orange);letter-spacing:-.03em;font-style:italic}
+.hdiv{width:1px;height:20px;background:var(--border2)}
+.htitle{font-size:13px;color:var(--ink3);font-weight:500}
+.hright{display:flex;align-items:center;gap:10px}
+.hbadge{font-size:11px;padding:4px 12px;border-radius:20px;background:var(--orange-lite);color:var(--orange-dark);font-weight:600;border:1px solid rgba(244,81,10,.15)}
+
+/* PRICE TOGGLE */
+.pt{display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border2);border-radius:20px;padding:3px}
+.pt-btn{font-size:11px;font-weight:700;padding:4px 13px;border-radius:20px;border:none;background:transparent;color:var(--ink3);cursor:pointer;transition:all .15s;letter-spacing:.01em}
+.pt-btn.on{background:var(--orange);color:#fff;box-shadow:0 2px 6px rgba(244,81,10,.35)}
+
+/* ─── LAYOUT ─── */
+.layout{max-width:1140px;margin:0 auto;padding:2rem 1.5rem 4rem;display:grid;grid-template-columns:1fr 390px;gap:1.5rem;align-items:start}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.sidebar{order:-1}}
+
+/* ─── CARD ─── */
+.card{background:var(--white);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);padding:1.5rem;margin-bottom:1rem}
+.card:last-child{margin-bottom:0}
+.sec-lbl{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ─── PLAN CARDS ─── */
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.pc{border:2px solid var(--border2);border-radius:var(--r2);padding:14px;cursor:pointer;background:var(--white);transition:all .15s;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:transparent;transition:background .15s}
+.pc:hover{border-color:var(--orange-mid)}
+.pc.on{border-color:var(--orange);background:var(--orange-lite)}
+.pc.on::after{background:var(--orange)}
+.pc-name{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.pc.on .pc-name{color:var(--orange-dark)}
+.pc-price{font-size:12px;color:var(--ink3);margin-top:4px;font-weight:500}
+.pc-sel{position:absolute;top:10px;right:10px;width:16px;height:16px;border-radius:50%;border:2px solid var(--border2);transition:all .15s}
+.pc.on .pc-sel{background:var(--orange);border-color:var(--orange)}
+.pc.on .pc-sel::after{content:'';display:block;width:6px;height:6px;border-radius:50%;background:#fff;margin:3px auto}
+
+/* ─── FREQ ─── */
+.freq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.fc.highlight{border-color:var(--navy-mid)}
+.fc.highlight .fc-name{color:var(--navy)}
+.fc{border:2px solid var(--border2);border-radius:var(--r2);padding:11px 14px;cursor:pointer;background:var(--white);transition:all .15s}
+.fc:hover{border-color:var(--orange-mid)}
+.fc.on{border-color:var(--orange);background:var(--orange-lite)}
+.fc-name{font-size:13px;font-weight:700;color:var(--ink)}
+.fc.on .fc-name{color:var(--orange-dark)}
+.fc-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+.fbadge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:20px;background:var(--orange);color:#fff;margin-left:5px;font-weight:700;vertical-align:1px}
+
+/* ─── DISC BLOCK ─── */
+.disc-block{margin-top:.75rem;border:1.5px solid var(--border2);border-radius:var(--r2);overflow:hidden}
+.disc-hdr{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;user-select:none;background:var(--white);transition:background .12s}
+.disc-hdr:hover{background:#FAFAFA}
+.disc-hdr-lbl{font-size:12px;color:var(--ink2);flex:1;font-weight:500}
+.disc-abadge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--orange-lite);color:var(--orange-dark);font-weight:700;display:none;border:1px solid rgba(244,81,10,.2)}
+.disc-hdr .arr{font-size:13px;color:var(--ink3);transition:transform .2s}
+.disc-hdr.open .arr{transform:rotate(180deg)}
+.disc-panel{display:none;padding:12px 14px 14px;border-top:1px solid var(--border);background:#FAFAFA}
+.disc-panel.open{display:block}
+.chips-lbl{font-size:11px;color:var(--ink3);margin-bottom:8px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.chip{font-size:11px;font-family:'DM Mono',monospace;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border2);cursor:pointer;background:var(--white);color:var(--ink2);transition:all .12s;white-space:nowrap}
+.chip:hover{border-color:var(--orange);color:var(--orange-dark)}
+.chip.sel{background:var(--orange-lite);border-color:var(--orange);color:var(--orange-dark);font-weight:600}
+.chip.dim{opacity:.4}
+.or-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.or-line{flex:1;height:1px;background:var(--border)}
+.or-txt{font-size:10px;color:var(--ink3)}
+.code-row{display:flex;align-items:center;gap:8px}
+.code-row label{font-size:12px;color:var(--ink2);white-space:nowrap;display:flex;align-items:center;gap:4px;font-weight:500}
+.code-input{flex:1;font-size:12px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.04em;padding:7px 10px;border:1.5px solid var(--border2);border-radius:var(--r2);background:var(--white);color:var(--ink);outline:none;transition:border-color .15s}
+.code-input:focus{border-color:var(--orange)}
+.code-tag{font-size:11px;padding:3px 9px;border-radius:20px;white-space:nowrap;font-weight:700;display:none}
+.code-tag.ok{background:var(--green-lite);color:var(--green)}
+.code-tag.err{background:var(--red-lite);color:var(--red)}
+
+/* ─── MOD LIST ─── */
+.mod-list{display:flex;flex-direction:column;gap:6px}
+.mi{border:2px solid var(--border2);border-radius:var(--r2);background:var(--white);overflow:hidden;transition:border-color .15s}
+.mi:hover{border-color:var(--orange-mid)}
+.mi.on{border-color:var(--orange)}
+.mi-top{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none}
+.chk{width:18px;height:18px;border-radius:4px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:transparent;transition:all .15s}
+.mi.on .chk{background:var(--orange);border-color:var(--orange);color:#fff}
+.mi-name{font-size:13px;font-weight:700;color:var(--ink);flex:1}
+.mi-price{font-size:12px;color:var(--ink3);font-weight:500}
+.expand-bar{display:none;align-items:center;justify-content:space-between;padding:0 14px 0 42px;height:30px;cursor:pointer;border-top:1px solid var(--border);background:#FAFAFA;user-select:none;transition:background .12s}
+.expand-bar:hover{background:#F3F3F3}
+.ebl{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink3);font-weight:500}
+.expand-bar .arr{font-size:12px;color:var(--ink3);transition:transform .2s}
+.expand-bar.open .arr{transform:rotate(180deg)}
+.eb-badge{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--orange-lite);color:var(--orange-dark);font-weight:700;display:none;border:1px solid rgba(244,81,10,.2)}
+.mi .disc-panel{padding:12px 14px 14px 42px}
+
+/* ─── SIDEBAR ─── */
+.sidebar{position:sticky;top:78px}
+.account-field{width:100%;padding:11px 16px;font-size:14px;font-weight:600;border:2px solid var(--border2);border-radius:var(--r2);background:var(--white);color:var(--ink);outline:none;transition:border-color .15s;margin-bottom:1rem}
+.account-field:focus{border-color:var(--orange)}
+.account-field::placeholder{color:var(--ink3);font-weight:400}
+
+/* ─── PROPOSAL CARD ─── */
+.proposal-card{background:var(--white);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);overflow:hidden}
+
+/* Header naranja */
+.prop-head{background:var(--orange);padding:1.5rem;position:relative;overflow:hidden}
+.prop-head::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.08)}
+.prop-head::after{content:'';position:absolute;bottom:-25px;left:30px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05)}
+.prop-logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.03em;font-style:italic;margin-bottom:12px;opacity:.95}
+.prop-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:5px}
+.prop-account{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.02em;min-height:28px;line-height:1.2}
+.prop-account.empty{color:rgba(255,255,255,.4);font-weight:400;font-size:14px;font-style:italic}
+.prop-meta{display:flex;align-items:center;gap:8px;margin-top:10px}
+.prop-pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.18);color:#fff;letter-spacing:.04em;text-transform:uppercase}
+
+/* Body */
+.prop-body{padding:1.25rem}
+
+/* Line items */
+.pi{padding:10px 0;border-bottom:1px solid var(--border)}
+.pi:last-child{border-bottom:none;padding-bottom:0}
+.pi-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.pi-name{font-size:13px;font-weight:700;color:var(--ink);padding-top:2px}
+.pi-prices{text-align:right;flex-shrink:0}
+.pi-original{font-size:12px;color:var(--ink3);text-decoration:line-through;line-height:1.5;font-weight:500}
+.pi-final{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1.2}
+.pi-final.discounted{color:var(--orange-dark)}
+.pi-final-sub{font-size:10px;font-weight:500;color:var(--ink3)}
+.pi-disclines{margin-top:5px;padding-left:2px}
+.pi-disc{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:var(--green);padding:1px 0;font-weight:600}
+.pi-disc-lbl{display:flex;align-items:center;gap:3px;color:var(--ink3);font-weight:500}
+.pi-disc-amt{color:var(--green);font-weight:700}
+
+/* Total */
+.prop-total{background:var(--orange);border-radius:var(--r2);padding:1.25rem;margin:0 1.25rem 1.25rem;position:relative;overflow:hidden}
+.prop-total::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.08)}
+.pt-nodesc{font-size:11px;color:rgba(255,255,255,.6);font-weight:500;margin-bottom:2px;display:flex;justify-content:space-between}
+.pt-nodesc-val{text-decoration:line-through;font-weight:700}
+.pt-main{display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px}
+.pt-main-lbl{font-size:12px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.02em;text-transform:uppercase}
+.pt-val{font-size:30px;font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1}
+.pt-val-sub{font-size:12px;font-weight:500;color:rgba(255,255,255,.6);margin-left:2px}
+.pt-upfront{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.2)}
+.pt-upfront-lbl{font-size:11px;color:rgba(255,255,255,.65);font-weight:500}
+.pt-upfront-val{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.02em}
+
+/* Footer */
+.prop-foot{padding:.875rem 1.25rem;border-top:1px solid var(--border);background:#FAFAFA;display:flex;align-items:center;gap:8px}
+.prop-foot-txt{font-size:11px;color:var(--ink3);flex:1;font-weight:500}
+.action-btn{font-size:11px;font-weight:700;padding:7px 13px;border-radius:7px;border:1.5px solid var(--border2);background:var(--white);color:var(--ink2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .12s;white-space:nowrap;letter-spacing:.01em}
+.action-btn:hover{border-color:var(--orange);color:var(--orange)}
+.action-btn.primary{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(244,81,10,.25)}
+.action-btn.primary:hover{background:var(--orange-dark);border-color:var(--orange-dark)}
+.action-btn.copied{background:var(--green-lite);border-color:var(--green);color:var(--green)}
+
+/* Empty */
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--ink3);font-size:13px}
+
+/* Reset */
+.reset-btn{width:100%;margin-top:.75rem;padding:10px;border-radius:var(--r2);border:1.5px solid var(--border2);background:var(--white);color:var(--ink3);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s}
+.reset-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-lite)}
+
+/* ─── LOGIN SCREEN ─── */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-box{background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,0.10);width:100%;max-width:400px;overflow:hidden}
+.login-head{background:var(--orange);padding:2rem;text-align:center}
+.login-head img{height:32px;display:block;margin:0 auto 14px}
+.login-head p{font-size:12px;color:rgba(255,255,255,.75);font-weight:500;margin-top:4px}
+.login-body{padding:2rem}
+.lf-label{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:5px;display:block}
+.lf-input{width:100%;padding:10px 13px;border:1.5px solid var(--border2);border-radius:var(--r2);font-size:14px;font-family:'Inter',sans-serif;color:var(--ink);outline:none;transition:border-color .15s;margin-bottom:1rem;background:var(--white)}
+.lf-input:focus{border-color:var(--orange)}
+.lf-btn{width:100%;padding:11px;background:var(--orange);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.lf-btn:hover{background:var(--orange-dark)}
+.lf-btn:disabled{opacity:.6;cursor:not-allowed}
+.lf-error{font-size:12px;color:var(--red);background:var(--red-lite);border-radius:6px;padding:8px 12px;margin-bottom:1rem;display:none}
+.lf-error.show{display:block}
+
+/* ─── USER CHIP en header ─── */
+.user-chip{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--bg);border:1.5px solid var(--border2);border-radius:20px;padding:4px 12px 4px 6px;cursor:default}
+.user-avatar{width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.role-badge{font-size:10px;padding:1px 7px;border-radius:20px;font-weight:700;margin-left:2px}
+.role-badge.cs{background:#EEF2FF;color:#4F46E5}
+.role-badge.sales{background:#F0FDF4;color:#16A34A}
+.logout-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border2);background:var(--white);color:var(--ink3);cursor:pointer;transition:all .12s;margin-left:4px}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* Print modal */
+.print-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.print-overlay.show{display:flex}
+.print-modal{background:var(--white);border-radius:16px;padding:2rem;max-width:440px;width:92%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.print-modal h3{font-size:17px;font-weight:800;margin-bottom:6px;color:var(--ink)}
+.print-modal p{font-size:13px;color:var(--ink3);margin-bottom:1.25rem;line-height:1.5}
+#snapshotImg{max-width:100%;border-radius:10px;margin-bottom:1.25rem;display:none;border:1px solid var(--border);box-shadow:var(--sh)}
+.print-actions{display:flex;gap:8px;justify-content:center}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-head">
+      <img src="https://fu.do/assets/img/fudo_logo_light-adf69c8f.svg" alt="Fudo">
+      <p>Calculadora CS — Ingresá con tu cuenta</p>
+    </div>
+    <div class="login-body">
+      <div class="lf-error" id="loginError"></div>
+      <label class="lf-label" for="loginEmail">Email</label>
+      <input class="lf-input" type="email" id="loginEmail" placeholder="tu@fudo.com" autocomplete="email">
+      <label class="lf-label" for="loginPass">Contraseña</label>
+      <input class="lf-input" type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+      <button class="lf-btn" id="loginBtn" onclick="doLogin()">
+        <i class="ti ti-login" style="font-size:14px"></i> Ingresar
+      </button>
+    </div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="hb">
+    <img src="https://fu.do/assets/img/fudo_logo_color-15654b45.svg" alt="Fudo" style="height:28px;display:block">
+    <div class="hdiv"></div>
+    <span class="htitle">Calculadora CS</span>
+  </div>
+  <div class="hright">
+    <span class="hbadge">Uso interno</span>
+    <div class="pt" id="priceToggle">
+      <button class="pt-btn on" data-period="mayo">Mayo</button>
+      <button class="pt-btn" data-period="junio">Junio</button>
+    </div>
+    <div class="user-chip" id="userChip" style="display:none">
+      <div class="user-avatar" id="userInitial">?</div>
+      <span id="userName">—</span>
+      <span class="role-badge" id="roleBadge">—</span>
+    </div>
+    <button class="logout-btn" id="logoutBtn" style="display:none" onclick="doLogout()">
+      <i class="ti ti-logout" style="font-size:11px"></i> Salir
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="main">
+
+    <div class="card">
+      <div class="sec-lbl">1 — Plan</div>
+      <div class="plan-grid" id="planGrid">
+        <div class="pc on" data-id="INI" data-price="19500">
+          <div class="pc-sel"></div>
+          <div class="pc-name">Inicial</div>
+          <div class="pc-price">$19.500/mes</div>
+        </div>
+        <div class="pc" data-id="ADV" data-price="39000">
+          <div class="pc-sel"></div>
+          <div class="pc-name">Avanzado</div>
+          <div class="pc-price">$39.000/mes</div>
+        </div>
+        <div class="pc" data-id="PRO" data-price="60000">
+          <div class="pc-sel"></div>
+          <div class="pc-name">Pro</div>
+          <div class="pc-price">$60.000/mes</div>
+        </div>
+      </div>
+      <div class="disc-block">
+        <div class="disc-hdr" id="planDiscHeader">
+          <i class="ti ti-tag" style="font-size:13px;color:var(--ink3)"></i>
+          <span class="disc-hdr-lbl">Aplicar descuento al plan</span>
+          <span class="disc-abadge" id="planDiscBadge"></span>
+          <i class="ti ti-chevron-down arr"></i>
+        </div>
+        <div class="disc-panel" id="planDiscPanel">
+          <div class="chips-lbl">Códigos disponibles para este plan</div>
+          <div class="chips" id="planChips"></div>
+          <div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div>
+          <div class="code-row">
+            <label><i class="ti ti-ticket" style="font-size:12px"></i> Código</label>
+            <input class="code-input" type="text" id="planCode" placeholder="ej: CS_PRO_RET" />
+            <span class="code-tag" id="planCodeTag"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-lbl">2 — Frecuencia de pago</div>
+      <div class="freq-grid" id="freqGrid">
+        <div class="fc on" data-freq="mens_sin"><div class="fc-name">Mensual sin suscripción</div><div class="fc-sub">Pago manual cada mes</div></div>
+        <div class="fc" data-freq="mens_con"><div class="fc-name">Mensual con suscripción<span class="fbadge">5% OFF</span></div><div class="fc-sub">Débito automático</div></div>
+        <div class="fc" data-freq="trim"><div class="fc-name">Trimestral</div><div class="fc-sub">Pago único por adelantado</div></div>
+        <div class="fc" data-freq="sem"><div class="fc-name">Semestral<span class="fbadge">10% OFF</span></div><div class="fc-sub">Pago único por adelantado</div></div>
+        <div class="fc" data-freq="anu"><div class="fc-name">Anual<span class="fbadge">15% OFF</span></div><div class="fc-sub">Pago único por adelantado</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-lbl">3 — Módulos</div>
+      <div class="mod-list" id="modList">
+        <div class="mi" data-id="KDS" data-price="18000">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Monitor de Cocina (KDS)</span><span class="mi-price">$18.000/mes</span></div>
+          <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
+          <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_KDS_RET" /><span class="code-tag"></span></div></div>
+        </div>
+        <div class="mi" data-id="TBL" data-price="7500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Gestión de Mesas</span><span class="mi-price">$7.500/mes</span></div>
+          <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
+          <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_TBL_RET" /><span class="code-tag"></span></div></div>
+        </div>
+        <div class="mi" data-id="FI" data-price="12500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Facturación Electrónica</span><span class="mi-price">$12.500/mes</span></div>
+          <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
+          <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_FI_RET" /><span class="code-tag"></span></div></div>
+        </div>
+        <div class="mi" data-id="DV" data-price="18000">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Ventas por Delivery</span><span class="mi-price">$18.000/mes</span></div>
+          <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
+          <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_DV_RET" /><span class="code-tag"></span></div></div>
+        </div>
+        <div class="mi" data-id="IDVSLS" data-price="12500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Ventas por Comensal</span><span class="mi-price">$12.500/mes</span></div>
+          <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
+          <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_IND_RET" /><span class="code-tag"></span></div></div>
+        </div>
+        <div class="mi" data-id="SBW" data-price="18000">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Balanzas</span><span class="mi-price">$18.000/mes</span></div>
+          <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
+          <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_SBW_RET" /><span class="code-tag"></span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <input class="account-field" type="text" id="accountName" placeholder="✦  Nombre de la cuenta..." />
+
+    <div class="proposal-card" id="proposalCard">
+      <div class="prop-head">
+        <img src="https://fu.do/assets/img/fudo_logo_light-adf69c8f.svg" alt="Fudo" style="height:24px;display:block;margin-bottom:12px">
+        <div class="prop-title">Propuesta Comercial</div>
+        <div class="prop-account empty" id="propAccountName">Ingresá el nombre de la cuenta</div>
+        <div class="prop-meta">
+          <span class="prop-pill" id="propPeriod">Mayo 2025</span>
+          <span class="prop-pill" id="propFreqPill">Mensual s/suscripción</span>
+        </div>
+      </div>
+
+      <div class="prop-body" id="propBody">
+        <div class="empty-state">
+          <i class="ti ti-file-dollar" style="font-size:32px;display:block;margin-bottom:10px;color:var(--orange);opacity:.3"></i>
+          Seleccioná un plan para generar la propuesta
+        </div>
+      </div>
+
+      <div id="propTotalWrap" style="display:none">
+        <div class="prop-total">
+          <div class="pt-nodesc" id="ptNoDesc" style="display:none">
+            <span>Sin descuentos</span>
+            <span class="pt-nodesc-val" id="ptOrig"></span>
+          </div>
+          <div class="pt-main">
+            <span class="pt-main-lbl">Total mensual</span>
+            <div>
+              <span class="pt-val" id="ptVal">$0</span>
+              <span class="pt-val-sub">/mes</span>
+            </div>
+          </div>
+          <div class="pt-upfront" id="ptUpfront" style="display:none">
+            <span class="pt-upfront-lbl" id="ptUpfrontLbl">Pago único</span>
+            <span class="pt-upfront-val" id="ptUpfrontVal"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prop-foot">
+        <span class="prop-foot-txt" id="sinImpTxt">Precios sin impuestos nacionales</span>
+        <button class="action-btn" id="copyBtn"><i class="ti ti-copy" style="font-size:12px"></i> Copiar</button>
+        <button class="action-btn primary" id="screenshotBtn"><i class="ti ti-camera" style="font-size:12px"></i> Imagen</button>
+      </div>
+    </div>
+
+    <button class="reset-btn" id="resetBtn">
+      <i class="ti ti-refresh" style="font-size:13px"></i> Reiniciar calculadora
+    </button>
+
+    <!-- PROPORCIONAL -->
+    <div class="proposal-card" id="prorateCard" style="margin-top:1rem">
+      <div class="prop-head" style="padding:1rem 1.5rem">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <i class="ti ti-calendar-stats" style="font-size:14px;color:rgba(255,255,255,.8)"></i>
+          <span style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.75)">Proporcional del mes</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <div style="background:rgba(255,255,255,.15);border-radius:6px;padding:.5rem .25rem;text-align:center">
+            <div style="font-size:20px;font-weight:900;color:#fff;line-height:1" id="prDiasTotal">—</div>
+            <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.05em;margin-top:2px">Días mes</div>
+          </div>
+          <div style="background:rgba(255,255,255,.15);border-radius:6px;padding:.5rem .25rem;text-align:center">
+            <div style="font-size:20px;font-weight:900;color:#fff;line-height:1" id="prDiasRest">—</div>
+            <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.05em;margin-top:2px">Restantes</div>
+          </div>
+          <div style="background:rgba(255,255,255,.15);border-radius:6px;padding:.5rem .25rem;text-align:center">
+            <div style="font-size:20px;font-weight:900;color:#fff;line-height:1" id="prPct">—</div>
+            <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.05em;margin-top:2px">Del mes</div>
+          </div>
+        </div>
+      </div>
+      <div class="prop-body" id="prLines">
+        <div class="empty-state" style="padding:1.5rem 1rem">
+          <i class="ti ti-calendar-off" style="font-size:28px;display:block;margin-bottom:8px;color:var(--orange);opacity:.3"></i>
+          Seleccioná un plan para ver el proporcional
+        </div>
+      </div>
+      <div id="prTotalWrap" style="display:none">
+        <div class="prop-total">
+          <div class="pt-main">
+            <span class="pt-main-lbl">A cobrar hoy</span>
+            <div>
+              <span class="pt-val" id="prTotal">$0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Print overlay -->
+<div class="print-overlay" id="printOverlay">
+  <div class="print-modal">
+    <h3>Propuesta lista ✓</h3>
+    <p>Guardá la imagen o compartila directamente por WhatsApp, Slack o mail.</p>
+    <img id="snapshotImg" alt="Propuesta comercial Fudo" />
+    <div class="print-actions">
+      <button class="action-btn" id="downloadBtn"><i class="ti ti-download" style="font-size:13px"></i> Descargar</button>
+      <button class="action-btn primary" id="closeOverlay"><i class="ti ti-x" style="font-size:13px"></i> Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SUPABASE CONFIG ── Reemplazá con los datos de tu proyecto ──
+const SUPABASE_URL  = 'https://xkqopmcfwxpajbvjgclg.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_BF6d6pYhth7H2MGAn2PiqQ_d2IggNvd';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── ESTADO GLOBAL ──
+let CODES = {};           // se carga desde Supabase al loguearse
+let currentUser = null;
+let currentRole = null;
+const PRICES={mayo:{plans:{INI:19500,ADV:39000,PRO:60000},mods:{KDS:18000,TBL:7500,FI:12500,DV:18000,IDVSLS:12500,SBW:18000}},junio:{plans:{INI:20900,ADV:41000,PRO:65000},mods:{KDS:19500,TBL:8500,FI:13500,DV:19500,IDVSLS:13500,SBW:19500}}};
+const FREQ_WEB={mens_sin:0,mens_con:5,trim:0,sem:10,anu:15};
+const FREQ_KEY={mens_sin:'ms',mens_con:'mc',trim:'tr',sem:'se',anu:'an'};
+const FREQ_MULT={mens_sin:1,mens_con:1,trim:3,sem:6,anu:12};
+const FREQ_NAME={mens_sin:'Mensual s/suscripción',mens_con:'Mensual c/suscripción',trim:'Trimestral',sem:'Semestral',anu:'Anual'};
+const PERIOD_LBL={mayo:'Mayo 2026',junio:'Junio 2026'};
+const fmt=n=>'$'+Math.round(n).toLocaleString('es-AR');
+const planName=id=>id==='INI'?'Inicial':id==='ADV'?'Avanzado':'Pro';
+let selPlan={id:'INI',price:19500},selFreq='mens_sin',selPeriod='mayo';
+
+// ── LOGIN ────────────────────────────────────────────────────
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass =document.getElementById('loginPass').value;
+  const btn  =document.getElementById('loginBtn');
+  const err  =document.getElementById('loginError');
+  err.classList.remove('show');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2" style="font-size:14px;animation:spin .7s linear infinite"></i> Ingresando…';
+
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){
+    err.textContent=error.message==='Invalid login credentials'
+      ?'Email o contraseña incorrectos'
+      :error.message;
+    err.classList.add('show');
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-login" style="font-size:14px"></i> Ingresar';
+    return;
+  }
+  await onLoginSuccess(data.user);
+}
+
+async function onLoginSuccess(user){
+  currentUser=user;
+  // Cargar perfil y rol
+  const {data:profile}=await sb.from('user_profiles').select('*,roles(name)').eq('id',user.id).single();
+  currentRole=profile?.roles?.name||'cs';
+  // Cargar códigos de descuento del rol
+  await loadCodes();
+  // Mostrar UI
+  showUserChip(profile?.full_name||user.email, currentRole);
+  document.getElementById('loginScreen').style.display='none';
+  applyPrices();
+  recalc();
+}
+
+async function loadCodes(){
+  const {data,error}=await sb.rpc('get_my_codes');
+  if(error||!data){console.warn('Error cargando códigos:',error);return;}
+  CODES={};
+  data.forEach(row=>{
+    CODES[row.code]={
+      plan:      row.applies_to==='plan'?row.target_id:undefined,
+      mod:       row.applies_to==='module'?row.target_id:undefined,
+      qty:       row.qty,
+      ms:        row.pct_mens_sin,
+      mc:        row.pct_mens_con,
+      tr:        row.pct_trim,
+      se:        row.pct_sem,
+      an:        row.pct_anu,
+    };
+  });
+}
+
+function showUserChip(name, role){
+  const initial=name.charAt(0).toUpperCase();
+  document.getElementById('userInitial').textContent=initial;
+  document.getElementById('userName').textContent=name.split('@')[0];
+  const rb=document.getElementById('roleBadge');
+  rb.textContent=role.toUpperCase();
+  rb.className='role-badge '+role;
+  document.getElementById('userChip').style.display='flex';
+  document.getElementById('logoutBtn').style.display='';
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  currentUser=null;currentRole=null;CODES={};
+  document.getElementById('userChip').style.display='none';
+  document.getElementById('logoutBtn').style.display='none';
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginScreen').style.display='flex';
+}
+
+// Retomar sesión activa al recargar
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session?.user) await onLoginSuccess(session.user);
+})();
+
+// Enter en el campo de password
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginPass').focus();});
+
+// Spin animation
+const styleEl=document.createElement('style');
+styleEl.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(styleEl);
+
+function applyPrices(){
+  const p=PRICES[selPeriod];
+  document.querySelectorAll('.pc').forEach(c=>{const pr=p.plans[c.dataset.id];c.dataset.price=pr;c.querySelector('.pc-price').textContent='$'+pr.toLocaleString('es-AR')+'/mes';});
+  document.querySelectorAll('#modList .mi').forEach(m=>{const pr=p.mods[m.dataset.id];m.dataset.price=pr;m.querySelector('.mi-price').textContent='$'+pr.toLocaleString('es-AR')+'/mes';});
+  selPlan.price=p.plans[selPlan.id];
+  document.getElementById('propPeriod').textContent=PERIOD_LBL[selPeriod];
+}
+function getCodesForPlan(id){return Object.entries(CODES).filter(([,v])=>v.plan===id).map(([k])=>k);}
+function getCodesForMod(id){return Object.entries(CODES).filter(([,v])=>v.mod===id).map(([k])=>k);}
+function renderChips(container,codes,activeCode,onSelect){
+  container.innerHTML='';const fk=FREQ_KEY[selFreq];
+  if(!codes.length){container.innerHTML='<span style="font-size:11px;color:var(--ink3)">Sin códigos disponibles</span>';return;}
+  codes.forEach(code=>{const pct=CODES[code][fk];const chip=document.createElement('div');chip.className='chip'+(code===activeCode?' sel':'')+(pct===0?' dim':'');chip.dataset.code=code;chip.textContent=code+(pct>0?' −'+pct+'%':' (sin desc.)');chip.addEventListener('click',()=>onSelect(code));container.appendChild(chip);});
+}
+function syncChips(container,activeCode){container.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',c.dataset.code===activeCode));}
+
+function recalc(){
+  const fk=FREQ_KEY[selFreq],webPct=FREQ_WEB[selFreq],mult=FREQ_MULT[selFreq];
+  document.getElementById('propFreqPill').textContent=FREQ_NAME[selFreq];
+
+  // Plan
+  const planCodeVal=document.getElementById('planCode').value.trim().toUpperCase();
+  const planCodeData=CODES[planCodeVal];
+  let planCodePct=0,planCodeOk=false;
+  if(planCodeVal&&planCodeData&&planCodeData.plan===selPlan.id){planCodePct=planCodeData[fk]??0;planCodeOk=true;}
+  const pcTag=document.getElementById('planCodeTag');
+  if(planCodeVal){pcTag.style.display='';pcTag.className='code-tag '+(planCodeOk?'ok':'err');pcTag.textContent=planCodeOk?(planCodePct>0?'−'+planCodePct+'%':'Sin desc. esta frecuencia'):(planCodeData?'No aplica a este plan':'Código inválido');}else pcTag.style.display='none';
+  syncChips(document.getElementById('planChips'),planCodeVal);
+  const badge=document.getElementById('planDiscBadge');
+
+  const planBase=selPlan.price;
+  const planAfterCode=Math.max(0,planBase-planBase*planCodePct/100);
+  const planDiscWeb=planBase*webPct/100;
+  const planFinal=Math.max(0,planAfterCode-planDiscWeb);
+  const planDiscTotal=planBase-planFinal;
+  if(planDiscTotal>0){badge.style.display='';badge.textContent='−'+fmt(planDiscTotal);}else badge.style.display='none';
+
+  let baseTotal=planBase,finalTotal=planFinal;
+  const items=[{name:'Plan '+planName(selPlan.id),base:planBase,final:planFinal,discLines:[planCodePct>0?{lbl:'Desc. código '+planCodePct+'%',amt:planBase*planCodePct/100}:null,webPct>0?{lbl:'Desc. suscripción '+webPct+'%',amt:planDiscWeb}:null].filter(Boolean)}];
+
+  document.querySelectorAll('#modList .mi').forEach(mi=>{
+    if(!mi.classList.contains('on'))return;
+    const id=mi.dataset.id,price=parseInt(mi.dataset.price);
+    const inp=mi.querySelector('.mod-code'),tag=mi.querySelector('.disc-panel .code-tag');
+    const codeVal=inp?inp.value.trim().toUpperCase():'',codeData=CODES[codeVal];
+    let codePct=0;
+    if(codeVal){if(codeData&&codeData.mod===id){codePct=codeData[fk]??0;tag.style.display='';tag.className='code-tag ok';tag.textContent=codePct>0?'−'+codePct+'%':'Sin desc. esta frecuencia';}else{tag.style.display='';tag.className='code-tag err';tag.textContent=codeData?'No aplica a este módulo':'Código inválido';}}else if(tag)tag.style.display='none';
+    syncChips(mi.querySelector('.chips'),codeVal);
+    const modAfterCode=Math.max(0,price-price*codePct/100),modDiscWeb=price*webPct/100,modFinal=Math.max(0,modAfterCode-modDiscWeb),modDiscTotal=price-modFinal;
+    baseTotal+=price;finalTotal+=modFinal;
+    const eb=mi.querySelector('.expand-bar'),ebBadge=eb.querySelector('.eb-badge'),ebSpan=eb.querySelector('.eb-label');
+    if(modDiscTotal>0){ebBadge.style.display='';ebBadge.textContent='−'+fmt(modDiscTotal);if(ebSpan)ebSpan.textContent='Descuento aplicado';}else{ebBadge.style.display='none';if(ebSpan)ebSpan.textContent='Aplicar descuento';}
+    items.push({name:mi.querySelector('.mi-name').textContent,base:price,final:modFinal,discLines:[codePct>0?{lbl:'Desc. código '+codePct+'%',amt:price*codePct/100}:null,webPct>0?{lbl:'Desc. suscripción '+webPct+'%',amt:modDiscWeb}:null].filter(Boolean)});
+  });
+
+  const upfront=finalTotal*mult;
+  const body=document.getElementById('propBody');
+
+  if(!items.length||items[0].base===0){body.innerHTML='<div class="empty-state"><i class="ti ti-file-dollar" style="font-size:32px;display:block;margin-bottom:10px;color:var(--orange);opacity:.3"></i>Seleccioná un plan para generar la propuesta</div>';document.getElementById('propTotalWrap').style.display='none';document.getElementById('sinImpTxt').textContent='Precios sin impuestos nacionales';return;}
+
+  let html='';
+  items.forEach(item=>{
+    const hasDisc=item.discLines.length>0;
+    html+=`<div class="pi"><div class="pi-top"><span class="pi-name">${item.name}</span><div class="pi-prices">${hasDisc?`<div class="pi-original">${fmt(item.base)}/mes</div>`:''}<div class="pi-final${hasDisc?' discounted':''}">${fmt(item.final)}<span class="pi-final-sub">/mes</span></div></div></div>`;
+    if(hasDisc){html+=`<div class="pi-disclines">`;item.discLines.forEach(d=>{html+=`<div class="pi-disc"><span class="pi-disc-lbl"><i class="ti ti-corner-down-right" style="font-size:10px"></i>${d.lbl} (s/ ${fmt(item.base)})</span><span class="pi-disc-amt">−${fmt(d.amt)}</span></div>`;});html+=`</div>`;}
+    html+=`</div>`;
+  });
+  body.innerHTML=html;
+
+  document.getElementById('propTotalWrap').style.display='block';
+  const ptNoDesc=document.getElementById('ptNoDesc');
+  if(baseTotal!==finalTotal){ptNoDesc.style.display='flex';document.getElementById('ptOrig').textContent=fmt(baseTotal);}else ptNoDesc.style.display='none';
+  document.getElementById('ptVal').textContent=fmt(finalTotal);
+  const ptu=document.getElementById('ptUpfront');
+  if(mult>1){ptu.style.display='flex';document.getElementById('ptUpfrontLbl').textContent='Pago único (×'+mult+' meses)';document.getElementById('ptUpfrontVal').textContent=fmt(upfront);}else ptu.style.display='none';
+  const sinImp=(mult>1?upfront:finalTotal)/1.21;
+  document.getElementById('sinImpTxt').textContent='Sin impuestos: '+fmt(sinImp)+(mult>1?' total':'/mes');
+
+  let txt='PROPUESTA COMERCIAL — FUDO\n';
+  const acc=document.getElementById('accountName').value.trim();
+  if(acc)txt+=`Cuenta: ${acc}\n`;
+  txt+=`Período: ${PERIOD_LBL[selPeriod]} | ${FREQ_NAME[selFreq]}\n\n`;
+  items.forEach(i=>{txt+=`${i.name}: ${fmt(i.base)}${i.final!==i.base?' → '+fmt(i.final):''}/mes\n`;});
+  txt+=`\nTotal mensual: ${fmt(finalTotal)}`;
+  if(mult>1)txt+=`\nPago único (×${mult}): ${fmt(upfront)}`;
+  txt+=`\nSin impuestos: ${fmt(sinImp)}`;
+  const prTotal=document.getElementById('prTotal').textContent;
+  const prRest=document.getElementById('prDiasRest').textContent;
+  const prMonth=document.getElementById('prDiasTotal').textContent;
+  if(prTotal&&prTotal!=='—') txt+=`\nProporcional mes actual (${prRest}/${prMonth} días): ${prTotal}`;
+  document.getElementById('copyBtn').dataset.text=txt;
+  calcProrate(finalTotal, items);
+}
+
+function calcProrate(finalTotal, items){
+  const today=new Date();
+  const year=today.getFullYear(),month=today.getMonth(),day=today.getDate();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const daysRemaining=daysInMonth-day+1;
+  const pct=daysRemaining/daysInMonth;
+
+  document.getElementById('prDiasTotal').textContent=daysInMonth;
+  document.getElementById('prDiasRest').textContent=daysRemaining;
+  document.getElementById('prPct').textContent=Math.round(pct*100)+'%';
+
+  const wrap=document.getElementById('prTotalWrap');
+
+  if(!items.length||items[0].base===0){
+    document.getElementById('prLines').innerHTML='<div class="empty-state" style="padding:1.5rem 1rem"><i class="ti ti-calendar-off" style="font-size:28px;display:block;margin-bottom:8px;color:var(--orange);opacity:.3"></i>Seleccioná un plan para ver el proporcional</div>';
+    wrap.style.display='none';
+    return;
+  }
+
+  let html='',total=0;
+  items.forEach(item=>{
+    const v=Math.round(item.final*pct);
+    total+=v;
+    html+=`<div class="pi"><div class="pi-top"><span class="pi-name">${item.name}</span><div class="pi-prices"><div class="pi-final">${fmt(v)}</div></div></div><div style="font-size:11px;color:var(--ink3);margin-top:2px">mensual: ${fmt(item.final)} × ${Math.round(pct*100)}%</div></div>`;
+  });
+  document.getElementById('prLines').innerHTML=html;
+  wrap.style.display='block';
+  document.getElementById('prTotal').textContent=fmt(total);
+}
+
+// Events
+document.getElementById('accountName').addEventListener('input',function(){
+  const v=this.value.trim(),el=document.getElementById('propAccountName');
+  if(v){el.textContent=v;el.classList.remove('empty');}else{el.textContent='Ingresá el nombre de la cuenta';el.classList.add('empty');}
+});
+document.getElementById('planDiscHeader').addEventListener('click',()=>{
+  const h=document.getElementById('planDiscHeader'),p=document.getElementById('planDiscPanel');
+  h.classList.toggle('open');p.classList.toggle('open');
+  if(p.classList.contains('open'))renderChips(document.getElementById('planChips'),getCodesForPlan(selPlan.id),document.getElementById('planCode').value.trim().toUpperCase(),code=>{document.getElementById('planCode').value=code;recalc();});
+});
+document.getElementById('planGrid').addEventListener('click',e=>{
+  const c=e.target.closest('.pc');if(!c)return;
+  document.querySelectorAll('.pc').forEach(x=>x.classList.remove('on'));c.classList.add('on');
+  selPlan={id:c.dataset.id,price:parseInt(c.dataset.price)};
+  document.getElementById('planCode').value='';document.getElementById('planCodeTag').style.display='none';
+  if(document.getElementById('planDiscPanel').classList.contains('open'))renderChips(document.getElementById('planChips'),getCodesForPlan(selPlan.id),'',code=>{document.getElementById('planCode').value=code;recalc();});
+  recalc();
+});
+document.getElementById('freqGrid').addEventListener('click',e=>{
+  const c=e.target.closest('.fc');if(!c)return;
+  document.querySelectorAll('.fc').forEach(x=>x.classList.remove('on'));c.classList.add('on');selFreq=c.dataset.freq;
+  if(document.getElementById('planDiscPanel').classList.contains('open'))renderChips(document.getElementById('planChips'),getCodesForPlan(selPlan.id),document.getElementById('planCode').value.trim().toUpperCase(),code=>{document.getElementById('planCode').value=code;recalc();});
+  document.querySelectorAll('#modList .mi.on').forEach(mi=>{if(mi.querySelector('.disc-panel.open'))renderChips(mi.querySelector('.chips'),getCodesForMod(mi.dataset.id),mi.querySelector('.mod-code').value.trim().toUpperCase(),code=>{mi.querySelector('.mod-code').value=code;recalc();});});
+  recalc();
+});
+document.getElementById('modList').addEventListener('click',e=>{
+  const eb=e.target.closest('.expand-bar');
+  if(eb){const mi=eb.closest('.mi'),panel=mi.querySelector('.disc-panel');eb.classList.toggle('open');panel.classList.toggle('open');if(panel.classList.contains('open'))renderChips(mi.querySelector('.chips'),getCodesForMod(mi.dataset.id),mi.querySelector('.mod-code').value.trim().toUpperCase(),code=>{mi.querySelector('.mod-code').value=code;recalc();});return;}
+  const mi=e.target.closest('.mi');if(!mi)return;
+  if(e.target.closest('.disc-panel')||e.target.tagName==='INPUT')return;
+  mi.classList.toggle('on');
+  const eb2=mi.querySelector('.expand-bar'),panel=mi.querySelector('.disc-panel');
+  if(mi.classList.contains('on')){eb2.style.display='flex';}else{eb2.style.display='none';eb2.classList.remove('open');panel.classList.remove('open');mi.querySelector('.mod-code').value='';const t=mi.querySelector('.disc-panel .code-tag');if(t)t.style.display='none';}
+  recalc();
+});
+document.getElementById('modList').addEventListener('input',e=>{if(e.target.classList.contains('mod-code'))recalc();});
+document.getElementById('planCode').addEventListener('input',recalc);
+document.getElementById('priceToggle').addEventListener('click',e=>{
+  const btn=e.target.closest('.pt-btn');if(!btn)return;
+  selPeriod=btn.dataset.period;document.querySelectorAll('.pt-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  applyPrices();recalc();
+});
+document.getElementById('copyBtn').addEventListener('click',function(){
+  const text=this.dataset.text;if(!text)return;
+  navigator.clipboard.writeText(text).then(()=>{this.classList.add('copied');this.innerHTML='<i class="ti ti-check" style="font-size:12px"></i> Copiado';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='<i class="ti ti-copy" style="font-size:12px"></i> Copiar';},2000);});
+});
+document.getElementById('screenshotBtn').addEventListener('click',()=>{
+  const card=document.getElementById('proposalCard');
+  html2canvas(card,{scale:2.5,backgroundColor:'#ffffff',useCORS:true,logging:false}).then(canvas=>{
+    const img=document.getElementById('snapshotImg');
+    img.src=canvas.toDataURL('image/png');img.style.display='block';
+    const acc=document.getElementById('accountName').value.trim()||'propuesta';
+    document.getElementById('downloadBtn').dataset.url=img.src;
+    document.getElementById('downloadBtn').dataset.name='fudo-'+acc.toLowerCase().replace(/\s+/g,'-')+'.png';
+    document.getElementById('printOverlay').classList.add('show');
+  });
+});
+document.getElementById('downloadBtn').addEventListener('click',function(){const a=document.createElement('a');a.href=this.dataset.url;a.download=this.dataset.name||'fudo-propuesta.png';a.click();});
+document.getElementById('closeOverlay').addEventListener('click',()=>document.getElementById('printOverlay').classList.remove('show'));
+document.getElementById('printOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('printOverlay').classList.remove('show');});
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  document.querySelectorAll('.pc').forEach(x=>x.classList.remove('on'));document.querySelector('.pc[data-id="INI"]').classList.add('on');
+  selPlan={id:'INI',price:PRICES[selPeriod].plans['INI']};
+  document.querySelectorAll('.fc').forEach(x=>x.classList.remove('on'));document.querySelector('.fc[data-freq="mens_sin"]').classList.add('on');selFreq='mens_sin';
+  document.getElementById('planCode').value='';document.getElementById('planCodeTag').style.display='none';
+  document.getElementById('planDiscHeader').classList.remove('open');document.getElementById('planDiscPanel').classList.remove('open');
+  document.querySelectorAll('#modList .mi').forEach(mi=>{mi.classList.remove('on');mi.querySelector('.expand-bar').style.display='none';mi.querySelector('.expand-bar').classList.remove('open');mi.querySelector('.disc-panel').classList.remove('open');mi.querySelector('.mod-code').value='';const t=mi.querySelector('.disc-panel .code-tag');if(t)t.style.display='none';});
+  recalc();
+});
+
+applyPrices();
+recalc();
+</script>
+</body>
+</html>
