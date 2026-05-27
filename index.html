@@ -329,7 +329,7 @@ input,button{font-family:'Inter',sans-serif}
   <div class="login-box">
     <div class="login-head">
       <img src="https://fu.do/assets/img/fudo_logo_light-adf69c8f.svg" alt="Fudo">
-      <p id="loginHeadTxt">Calculadora CS — Ingresá con tu cuenta</p>
+      <p id="loginHeadTxt">Calculadora de precios — Ingresá con tu cuenta</p>
     </div>
 
     <!-- PANEL LOGIN -->
@@ -384,7 +384,7 @@ input,button{font-family:'Inter',sans-serif}
   <div class="hb">
     <img src="https://fu.do/assets/img/fudo_logo_color-15654b45.svg" alt="Fudo" style="height:28px;display:block">
     <div class="hdiv"></div>
-    <span class="htitle">Calculadora CS</span>
+    <span class="htitle">Calculadora de precios</span>
   </div>
   <div class="hright">
     <span class="hbadge">Uso interno</span>
@@ -713,7 +713,7 @@ function showPanel(p){
   document.getElementById('panelLogin').style.display    = p==='login'    ? '' : 'none';
   document.getElementById('panelRegister').style.display = p==='register' ? '' : 'none';
   document.getElementById('loginHeadTxt').textContent    = p==='login'
-    ? 'Calculadora CS — Ingresá con tu cuenta'
+    ? 'Calculadora de precios — Ingresá con tu cuenta'
     : 'Crear cuenta nueva';
   document.getElementById('loginError').classList.remove('show');
   document.getElementById('regError').classList.remove('show');
