@@ -47,14 +47,76 @@ input,button{font-family:'Inter',sans-serif}
 .hright{display:flex;align-items:center;gap:10px}
 .hbadge{font-size:11px;padding:4px 12px;border-radius:20px;background:var(--orange-lite);color:var(--orange-dark);font-weight:600;border:1px solid rgba(244,81,10,.15)}
 
-/* PRICE TOGGLE */
-.pt{display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border2);border-radius:20px;padding:3px}
-.pt-btn{font-size:11px;font-weight:700;padding:4px 13px;border-radius:20px;border:none;background:transparent;color:var(--ink3);cursor:pointer;transition:all .15s;letter-spacing:.01em}
-.pt-btn.on{background:var(--orange);color:#fff;box-shadow:0 2px 6px rgba(244,81,10,.35)}
-
 /* ─── LAYOUT ─── */
 .layout{max-width:1140px;margin:0 auto;padding:2rem 1.5rem 4rem;display:grid;grid-template-columns:1fr 390px;gap:1.5rem;align-items:start}
 @media(max-width:820px){.layout{grid-template-columns:1fr}.sidebar{order:-1}}
+
+/* ─── RESPONSIVE MOBILE ─── */
+@media(max-width:600px){
+  /* Header */
+  .header{padding:0 1rem;height:54px}
+  .htitle{display:none}
+  .hdiv{display:none}
+  .hbadge{display:none}
+  .hlogo{font-size:19px}
+  .hright{gap:6px}
+  .user-chip{padding:3px 8px 3px 4px;gap:5px}
+  .logout-btn{padding:4px 8px;font-size:10px}
+
+  /* Layout */
+  .layout{padding:1rem .75rem 3rem;gap:1rem}
+
+  /* Cards */
+  .card{padding:1.1rem;border-radius:10px}
+
+  /* Plan grid → 1 columna */
+  .plan-grid{grid-template-columns:1fr;gap:6px}
+  .pc{display:flex;align-items:center;gap:10px;padding:11px 14px}
+  .pc-name{font-size:13px}
+  .pc-price{font-size:11px;margin-top:0}
+  .pc-sel{position:static;margin-left:auto;flex-shrink:0}
+  .pc::after{display:none}
+
+  /* Freq grid → 1 columna */
+  .freq-grid{grid-template-columns:1fr;gap:6px}
+
+  /* Módulos */
+  .mi-top{padding:10px 12px;gap:8px}
+  .mi-name{font-size:12px}
+  .mi-price{font-size:11px}
+
+  /* Chips */
+  .chip{font-size:10px;padding:3px 8px}
+
+  /* Sidebar */
+  .sidebar{position:static}
+  .account-field{font-size:13px;padding:10px 14px}
+
+  /* Proposal card */
+  .prop-head{padding:1.1rem}
+  .prop-account{font-size:17px}
+  .prop-body{padding:1rem}
+  .prop-total{padding:1rem;margin:0 1rem 1rem}
+  .pt-val{font-size:26px}
+  .pt-upfront-val{font-size:15px}
+  .prop-foot{padding:.75rem 1rem;flex-wrap:wrap;gap:6px}
+  .action-btn{font-size:11px;padding:6px 10px}
+
+  /* Proporcional */
+  #prorateCard .prop-head{padding:.9rem 1rem}
+
+  /* Login */
+  .login-box{border-radius:12px}
+  .login-head{padding:1.5rem}
+  .login-body{padding:1.5rem}
+
+  /* Disc block */
+  .disc-hdr{padding:8px 12px}
+  .disc-panel{padding:10px 12px 12px}
+  .mi .disc-panel{padding:10px 12px 12px 36px}
+  .code-row{flex-wrap:wrap;gap:6px}
+  .code-input{width:100%}
+}
 
 /* ─── CARD ─── */
 .card{background:var(--white);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);padding:1.5rem;margin-bottom:1rem}
@@ -225,6 +287,31 @@ input,button{font-family:'Inter',sans-serif}
 .logout-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border2);background:var(--white);color:var(--ink3);cursor:pointer;transition:all .12s;margin-left:4px}
 .logout-btn:hover{border-color:var(--red);color:var(--red)}
 
+/* ─── LEYENDA SUSCRIPCIÓN ─── */
+.sub-notice{display:none;align-items:flex-start;gap:8px;background:#FFF8E6;border:1.5px solid #F6C84A;border-radius:var(--r2);padding:9px 12px;margin-top:.75rem}
+.sub-notice.show{display:flex}
+.sub-notice-icon{font-size:14px;color:#B07800;flex-shrink:0;margin-top:1px}
+.sub-notice-txt{font-size:11px;color:#7A5500;font-weight:500;line-height:1.5}
+.sub-notice-txt strong{font-weight:700;color:#5C3D00}
+
+.lf-btn-sec{width:100%;padding:10px;background:transparent;color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r2);font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:.6rem}
+.lf-btn-sec:hover{background:var(--orange-lite)}
+.lf-divider{display:flex;align-items:center;gap:10px;margin:.75rem 0;color:var(--ink3);font-size:11px}
+.lf-divider::before,.lf-divider::after{content:'';flex:1;height:1px;background:var(--border2)}
+.lf-link{font-size:12px;text-align:center;color:var(--ink3);margin-top:.75rem}
+.lf-link a{color:var(--orange);font-weight:700;cursor:pointer;text-decoration:none}
+.lf-link a:hover{text-decoration:underline}
+.lf-success{font-size:12px;color:var(--green);background:var(--green-lite);border-radius:6px;padding:8px 12px;margin-bottom:1rem;display:none;border:1px solid rgba(10,138,74,.2)}
+.lf-success.show{display:block}
+.role-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+.rp{border:2px solid var(--border2);border-radius:var(--r2);padding:12px 10px;cursor:pointer;text-align:center;transition:all .15s;background:var(--white)}
+.rp:hover{border-color:var(--orange-mid)}
+.rp.on{border-color:var(--orange);background:var(--orange-lite)}
+.rp-icon{font-size:22px;margin-bottom:5px}
+.rp-name{font-size:13px;font-weight:700;color:var(--ink)}
+.rp.on .rp-name{color:var(--orange-dark)}
+.rp-sub{font-size:10px;color:var(--ink3);margin-top:2px}
+
 /* Print modal */
 .print-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
 .print-overlay.show{display:flex}
@@ -242,9 +329,11 @@ input,button{font-family:'Inter',sans-serif}
   <div class="login-box">
     <div class="login-head">
       <img src="https://fu.do/assets/img/fudo_logo_light-adf69c8f.svg" alt="Fudo">
-      <p>Calculadora CS — Ingresá con tu cuenta</p>
+      <p id="loginHeadTxt">Calculadora CS — Ingresá con tu cuenta</p>
     </div>
-    <div class="login-body">
+
+    <!-- PANEL LOGIN -->
+    <div class="login-body" id="panelLogin">
       <div class="lf-error" id="loginError"></div>
       <label class="lf-label" for="loginEmail">Email</label>
       <input class="lf-input" type="email" id="loginEmail" placeholder="tu@fudo.com" autocomplete="email">
@@ -253,7 +342,41 @@ input,button{font-family:'Inter',sans-serif}
       <button class="lf-btn" id="loginBtn" onclick="doLogin()">
         <i class="ti ti-login" style="font-size:14px"></i> Ingresar
       </button>
+      <div class="lf-divider">o</div>
+      <button class="lf-btn-sec" onclick="showPanel('register')">
+        <i class="ti ti-user-plus" style="font-size:14px"></i> Crear cuenta nueva
+      </button>
     </div>
+
+    <!-- PANEL REGISTRO -->
+    <div class="login-body" id="panelRegister" style="display:none">
+      <div class="lf-error"   id="regError"></div>
+      <div class="lf-success" id="regSuccess"></div>
+      <label class="lf-label" for="regName">Nombre completo</label>
+      <input class="lf-input" type="text" id="regName" placeholder="Ej: María García" autocomplete="name">
+      <label class="lf-label" for="regEmail">Email</label>
+      <input class="lf-input" type="email" id="regEmail" placeholder="tu@fudo.com" autocomplete="email">
+      <label class="lf-label" for="regPass">Contraseña</label>
+      <input class="lf-input" type="password" id="regPass" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+      <label class="lf-label">¿Sos de Customer Success o Sales?</label>
+      <div class="role-pick">
+        <div class="rp on" id="rpCS" onclick="pickRole('cs')">
+          <div class="rp-icon">🎧</div>
+          <div class="rp-name">Customer Success</div>
+          <div class="rp-sub">Equipo CS</div>
+        </div>
+        <div class="rp" id="rpSales" onclick="pickRole('sales')">
+          <div class="rp-icon">🚀</div>
+          <div class="rp-name">Sales</div>
+          <div class="rp-sub">Equipo comercial</div>
+        </div>
+      </div>
+      <button class="lf-btn" id="regBtn" onclick="doRegister()">
+        <i class="ti ti-user-check" style="font-size:14px"></i> Crear cuenta
+      </button>
+      <div class="lf-link"><a onclick="showPanel('login')">← Volver al inicio de sesión</a></div>
+    </div>
+
   </div>
 </div>
 
@@ -261,14 +384,10 @@ input,button{font-family:'Inter',sans-serif}
   <div class="hb">
     <img src="https://fu.do/assets/img/fudo_logo_color-15654b45.svg" alt="Fudo" style="height:28px;display:block">
     <div class="hdiv"></div>
-    <span class="htitle">Calculadora Comercial</span>
+    <span class="htitle">Calculadora CS</span>
   </div>
   <div class="hright">
     <span class="hbadge">Uso interno</span>
-    <div class="pt" id="priceToggle">
-      <button class="pt-btn on" data-period="mayo">Mayo</button>
-      <button class="pt-btn" data-period="junio">Junio</button>
-    </div>
     <div class="user-chip" id="userChip" style="display:none">
       <div class="user-avatar" id="userInitial">?</div>
       <span id="userName">—</span>
@@ -336,33 +455,33 @@ input,button{font-family:'Inter',sans-serif}
     <div class="card">
       <div class="sec-lbl">3 — Módulos</div>
       <div class="mod-list" id="modList">
-        <div class="mi" data-id="KDS" data-price="18000">
-          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Monitor de Cocina (KDS)</span><span class="mi-price">$18.000/mes</span></div>
+        <div class="mi" data-id="KDS" data-price="19500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Monitor de Cocina (KDS)</span><span class="mi-price">$19.500/mes</span></div>
           <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
           <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_KDS_RET" /><span class="code-tag"></span></div></div>
         </div>
-        <div class="mi" data-id="TBL" data-price="7500">
-          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Gestión de Mesas</span><span class="mi-price">$7.500/mes</span></div>
+        <div class="mi" data-id="TBL" data-price="8500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Gestión de Mesas</span><span class="mi-price">$8.500/mes</span></div>
           <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
           <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_TBL_RET" /><span class="code-tag"></span></div></div>
         </div>
-        <div class="mi" data-id="FI" data-price="12500">
-          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Facturación Electrónica</span><span class="mi-price">$12.500/mes</span></div>
+        <div class="mi" data-id="FI" data-price="13500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Facturación Electrónica</span><span class="mi-price">$13.500/mes</span></div>
           <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
           <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_FI_RET" /><span class="code-tag"></span></div></div>
         </div>
-        <div class="mi" data-id="DV" data-price="18000">
-          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Ventas por Delivery</span><span class="mi-price">$18.000/mes</span></div>
+        <div class="mi" data-id="DV" data-price="19500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Ventas por Delivery</span><span class="mi-price">$19.500/mes</span></div>
           <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
           <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_DV_RET" /><span class="code-tag"></span></div></div>
         </div>
-        <div class="mi" data-id="IDVSLS" data-price="12500">
-          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Ventas por Comensal</span><span class="mi-price">$12.500/mes</span></div>
+        <div class="mi" data-id="IDVSLS" data-price="13500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Ventas por Comensal</span><span class="mi-price">$13.500/mes</span></div>
           <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
           <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_IND_RET" /><span class="code-tag"></span></div></div>
         </div>
-        <div class="mi" data-id="SBW" data-price="18000">
-          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Balanzas</span><span class="mi-price">$18.000/mes</span></div>
+        <div class="mi" data-id="SBW" data-price="19500">
+          <div class="mi-top"><div class="chk"><i class="ti ti-check"></i></div><span class="mi-name">Balanzas</span><span class="mi-price">$19.500/mes</span></div>
           <div class="expand-bar"><div class="ebl"><i class="ti ti-tag" style="font-size:11px"></i><span class="eb-label">Aplicar descuento</span><span class="eb-badge"></span></div><i class="ti ti-chevron-down arr"></i></div>
           <div class="disc-panel"><div class="chips-lbl">Códigos disponibles</div><div class="chips"></div><div class="or-row"><div class="or-line"></div><span class="or-txt">o ingresá manualmente</span><div class="or-line"></div></div><div class="code-row"><label><i class="ti ti-ticket" style="font-size:11px"></i> Código</label><input class="code-input mod-code" type="text" placeholder="ej: CS_SBW_RET" /><span class="code-tag"></span></div></div>
         </div>
@@ -417,6 +536,11 @@ input,button{font-family:'Inter',sans-serif}
         <span class="prop-foot-txt" id="sinImpTxt">Precios sin impuestos nacionales</span>
         <button class="action-btn" id="copyBtn"><i class="ti ti-copy" style="font-size:12px"></i> Copiar</button>
         <button class="action-btn primary" id="screenshotBtn"><i class="ti ti-camera" style="font-size:12px"></i> Imagen</button>
+      </div>
+
+      <div class="sub-notice" id="subNotice">
+        <i class="ti ti-alert-circle sub-notice-icon"></i>
+        <span class="sub-notice-txt"><strong>Importante:</strong> Este descuento será válido únicamente para pagos por suscripción (débito automático). Ante cualquier incumplimiento o cancelación de la suscripción, el precio volverá a lista.</span>
       </div>
     </div>
 
@@ -488,15 +612,14 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 let CODES = {};           // se carga desde Supabase al loguearse
 let currentUser = null;
 let currentRole = null;
-const PRICES={mayo:{plans:{INI:19500,ADV:39000,PRO:60000},mods:{KDS:18000,TBL:7500,FI:12500,DV:18000,IDVSLS:12500,SBW:18000}},junio:{plans:{INI:20900,ADV:41000,PRO:65000},mods:{KDS:19500,TBL:8500,FI:13500,DV:19500,IDVSLS:13500,SBW:19500}}};
+const PRICES={plans:{INI:20900,ADV:41000,PRO:65000},mods:{KDS:19500,TBL:8500,FI:13500,DV:19500,IDVSLS:13500,SBW:19500}};
 const FREQ_WEB={mens_sin:0,mens_con:5,trim:0,sem:10,anu:15};
 const FREQ_KEY={mens_sin:'ms',mens_con:'mc',trim:'tr',sem:'se',anu:'an'};
 const FREQ_MULT={mens_sin:1,mens_con:1,trim:3,sem:6,anu:12};
 const FREQ_NAME={mens_sin:'Mensual s/suscripción',mens_con:'Mensual c/suscripción',trim:'Trimestral',sem:'Semestral',anu:'Anual'};
-const PERIOD_LBL={mayo:'Mayo 2026',junio:'Junio 2026'};
 const fmt=n=>'$'+Math.round(n).toLocaleString('es-AR');
 const planName=id=>id==='INI'?'Inicial':id==='ADV'?'Avanzado':'Pro';
-let selPlan={id:'INI',price:19500},selFreq='mens_sin',selPeriod='mayo';
+let selPlan={id:'INI',price:20900},selFreq='mens_sin';
 
 // ── LOGIN ────────────────────────────────────────────────────
 async function doLogin(){
@@ -583,6 +706,87 @@ async function doLogout(){
 // Enter en el campo de password
 document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginPass').focus();});
+document.getElementById('regPass').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
+
+// ── NAVEGACIÓN ENTRE PANELES ─────────────────────────────────
+function showPanel(p){
+  document.getElementById('panelLogin').style.display    = p==='login'    ? '' : 'none';
+  document.getElementById('panelRegister').style.display = p==='register' ? '' : 'none';
+  document.getElementById('loginHeadTxt').textContent    = p==='login'
+    ? 'Calculadora CS — Ingresá con tu cuenta'
+    : 'Crear cuenta nueva';
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('regError').classList.remove('show');
+  document.getElementById('regSuccess').classList.remove('show');
+}
+
+// ── SELECTOR DE ROL ──────────────────────────────────────────
+let selectedRegRole = 'cs';
+function pickRole(r){
+  selectedRegRole = r;
+  document.getElementById('rpCS').classList.toggle('on',    r==='cs');
+  document.getElementById('rpSales').classList.toggle('on', r==='sales');
+}
+
+// ── REGISTRO ─────────────────────────────────────────────────
+async function doRegister(){
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  const btn   = document.getElementById('regBtn');
+  const err   = document.getElementById('regError');
+  const ok    = document.getElementById('regSuccess');
+
+  err.classList.remove('show');
+  ok.classList.remove('show');
+
+  if(!name){ err.textContent='Por favor ingresá tu nombre completo.'; err.classList.add('show'); return; }
+  if(!email){ err.textContent='Por favor ingresá tu email.'; err.classList.add('show'); return; }
+  if(pass.length < 6){ err.textContent='La contraseña debe tener al menos 6 caracteres.'; err.classList.add('show'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2" style="font-size:14px;animation:spin .7s linear infinite"></i> Creando cuenta…';
+
+  // 1. Crear usuario en Supabase Auth
+  const {data, error} = await sb.auth.signUp({
+    email,
+    password: pass,
+    options: { data: { full_name: name } }
+  });
+
+  if(error){
+    err.textContent = error.message === 'User already registered'
+      ? 'Ya existe una cuenta con ese email.'
+      : error.message;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-user-check" style="font-size:14px"></i> Crear cuenta';
+    return;
+  }
+
+  // 2. Insertar user_profile con el rol elegido
+  const roleId = selectedRegRole === 'cs' ? 1 : 2;
+  if(data.user){
+    await sb.from('user_profiles').insert({
+      id:        data.user.id,
+      full_name: name,
+      role_id:   roleId,
+      active:    true
+    });
+  }
+
+  // 3. Mostrar mensaje de éxito
+  ok.textContent = `✅ ¡Cuenta creada! Revisá tu email (${email}) y hacé click en el link de confirmación para activarla.`;
+  ok.classList.add('show');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-user-check" style="font-size:14px"></i> Crear cuenta';
+
+  // Limpiar campos
+  document.getElementById('regName').value  = '';
+  document.getElementById('regEmail').value = '';
+  document.getElementById('regPass').value  = '';
+  pickRole('cs');
+}
 
 // Spin animation
 const styleEl=document.createElement('style');
@@ -590,11 +794,10 @@ styleEl.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
 document.head.appendChild(styleEl);
 
 function applyPrices(){
-  const p=PRICES[selPeriod];
-  document.querySelectorAll('.pc').forEach(c=>{const pr=p.plans[c.dataset.id];c.dataset.price=pr;c.querySelector('.pc-price').textContent='$'+pr.toLocaleString('es-AR')+'/mes';});
-  document.querySelectorAll('#modList .mi').forEach(m=>{const pr=p.mods[m.dataset.id];m.dataset.price=pr;m.querySelector('.mi-price').textContent='$'+pr.toLocaleString('es-AR')+'/mes';});
-  selPlan.price=p.plans[selPlan.id];
-  document.getElementById('propPeriod').textContent=PERIOD_LBL[selPeriod];
+  document.querySelectorAll('.pc').forEach(c=>{const pr=PRICES.plans[c.dataset.id];c.dataset.price=pr;c.querySelector('.pc-price').textContent='$'+pr.toLocaleString('es-AR')+'/mes';});
+  document.querySelectorAll('#modList .mi').forEach(m=>{const pr=PRICES.mods[m.dataset.id];m.dataset.price=pr;m.querySelector('.mi-price').textContent='$'+pr.toLocaleString('es-AR')+'/mes';});
+  selPlan.price=PRICES.plans[selPlan.id];
+  document.getElementById('propPeriod').textContent='Junio 2026';
 }
 function getCodesForPlan(id){return Object.entries(CODES).filter(([,v])=>v.plan===id).map(([k])=>k);}
 function getCodesForMod(id){return Object.entries(CODES).filter(([,v])=>v.mod===id).map(([k])=>k);}
@@ -647,7 +850,7 @@ function recalc(){
   const upfront=finalTotal*mult;
   const body=document.getElementById('propBody');
 
-  if(!items.length||items[0].base===0){body.innerHTML='<div class="empty-state"><i class="ti ti-file-dollar" style="font-size:32px;display:block;margin-bottom:10px;color:var(--orange);opacity:.3"></i>Seleccioná un plan para generar la propuesta</div>';document.getElementById('propTotalWrap').style.display='none';document.getElementById('sinImpTxt').textContent='Precios sin impuestos nacionales';return;}
+  if(!items.length||items[0].base===0){body.innerHTML='<div class="empty-state"><i class="ti ti-file-dollar" style="font-size:32px;display:block;margin-bottom:10px;color:var(--orange);opacity:.3"></i>Seleccioná un plan para generar la propuesta</div>';document.getElementById('propTotalWrap').style.display='none';document.getElementById('sinImpTxt').textContent='Precios sin impuestos nacionales';document.getElementById('subNotice').classList.remove('show');return;}
 
   let html='';
   items.forEach(item=>{
@@ -670,7 +873,7 @@ function recalc(){
   let txt='PROPUESTA COMERCIAL — FUDO\n';
   const acc=document.getElementById('accountName').value.trim();
   if(acc)txt+=`Cuenta: ${acc}\n`;
-  txt+=`Período: ${PERIOD_LBL[selPeriod]} | ${FREQ_NAME[selFreq]}\n\n`;
+  txt+=`Período: Junio 2026 | ${FREQ_NAME[selFreq]}\n\n`;
   items.forEach(i=>{txt+=`${i.name}: ${fmt(i.base)}${i.final!==i.base?' → '+fmt(i.final):''}/mes\n`;});
   txt+=`\nTotal mensual: ${fmt(finalTotal)}`;
   if(mult>1)txt+=`\nPago único (×${mult}): ${fmt(upfront)}`;
@@ -680,6 +883,9 @@ function recalc(){
   const prMonth=document.getElementById('prDiasTotal').textContent;
   if(prTotal&&prTotal!=='—') txt+=`\nProporcional mes actual (${prRest}/${prMonth} días): ${prTotal}`;
   document.getElementById('copyBtn').dataset.text=txt;
+  // Mostrar leyenda si hay algún descuento aplicado
+  const hasAnyDisc=items.some(i=>i.discLines.length>0);
+  document.getElementById('subNotice').classList.toggle('show', hasAnyDisc);
   calcProrate(finalTotal, items);
 }
 
@@ -750,11 +956,6 @@ document.getElementById('modList').addEventListener('click',e=>{
 });
 document.getElementById('modList').addEventListener('input',e=>{if(e.target.classList.contains('mod-code'))recalc();});
 document.getElementById('planCode').addEventListener('input',recalc);
-document.getElementById('priceToggle').addEventListener('click',e=>{
-  const btn=e.target.closest('.pt-btn');if(!btn)return;
-  selPeriod=btn.dataset.period;document.querySelectorAll('.pt-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
-  applyPrices();recalc();
-});
 document.getElementById('copyBtn').addEventListener('click',function(){
   const text=this.dataset.text;if(!text)return;
   navigator.clipboard.writeText(text).then(()=>{this.classList.add('copied');this.innerHTML='<i class="ti ti-check" style="font-size:12px"></i> Copiado';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='<i class="ti ti-copy" style="font-size:12px"></i> Copiar';},2000);});
@@ -775,7 +976,7 @@ document.getElementById('closeOverlay').addEventListener('click',()=>document.ge
 document.getElementById('printOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('printOverlay').classList.remove('show');});
 document.getElementById('resetBtn').addEventListener('click',()=>{
   document.querySelectorAll('.pc').forEach(x=>x.classList.remove('on'));document.querySelector('.pc[data-id="INI"]').classList.add('on');
-  selPlan={id:'INI',price:PRICES[selPeriod].plans['INI']};
+  selPlan={id:'INI',price:PRICES.plans['INI']};
   document.querySelectorAll('.fc').forEach(x=>x.classList.remove('on'));document.querySelector('.fc[data-freq="mens_sin"]').classList.add('on');selFreq='mens_sin';
   document.getElementById('planCode').value='';document.getElementById('planCodeTag').style.display='none';
   document.getElementById('planDiscHeader').classList.remove('open');document.getElementById('planDiscPanel').classList.remove('open');
